@@ -120,7 +120,7 @@
                                                 <p class="text-gray-500 mb-0">{{ __('vender/history.drop_point') }}
                                                     {{ $booking->dropping_point ?? __('vender/history.na') }}</p>
                                                 <p class="text-gray-500 mb-0">{{ __('vender/history.paid_time') }}:
-                                                    {{ $booking->created_at->format('H:i A') }}</p>
+                                                    {{ $booking->created_at->format('d M Y H:i A') }}</p>
                                             </div>
                                         </td>
                                         <td class="py-2 px-4">
