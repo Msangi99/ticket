@@ -20,7 +20,7 @@ $cars = bus::with('campany', 'route', 'schedule')
         
         <div class="container mx-auto px-4 relative z-10">
             <div class="text-center mb-12 fade-in">
-                <h2 class="text-3xl md:text-4xl font-extrabold mb-4">Available <span class="gradient-text">Schedules</span></h2>
+                <h2 class="text-3xl md:text-4xl font-extrabold mb-4"> <span class="gradient-text">Schedules</span></h2>
                 <p class="text-gray-600 max-w-2xl mx-auto text-lg">Explore Tanzania's most traveled destinations with our premium bus services</p>
             </div>
 
