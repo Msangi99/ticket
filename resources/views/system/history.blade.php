@@ -98,7 +98,7 @@
                                                 <p class="text-gray-500 mb-0">Seat: {{ $booking->seat ?? 'N/A' }}</p>
                                                 <p class="text-gray-500 mb-0">Pickup: {{ $booking->pickup_point ?? 'N/A' }}</p>
                                                 <p class="text-gray-500 mb-0">Drop-point: {{ $booking->dropping_point ?? 'N/A' }}</p>
-                                                <p class="text-gray-500 mb-0">Paid Time: {{ $booking->created_at->format('H:i A') }}</p>
+                                                <p class="text-gray-500 mb-0">Paid Time: {{ $booking->created_at->format('d M Y H:i') }}</p>
                                             </div>
                                         </td>
                                         <td class="py-2 px-4">
