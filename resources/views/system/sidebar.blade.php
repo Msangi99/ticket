@@ -74,10 +74,27 @@
 
                 @if(auth()->user()->hasAccess(\App\Models\Access::LINKS['INSURANCE']))
                 <li>
-                    <a class="flex items-center px-3 py-2 text-white rounded-lg hover:bg-gray-700 transition-colors {{ request()->routeIs('bima.index') ? 'bg-blue-500' : '' }}" href="{{ route('bima.index') }}">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                        Insurance
-                    </a>
+                    <div class="relative">
+                        <button 
+                            type="button"
+                            class="bus-system-dropdown-toggle flex items-center px-3 py-2 text-white rounded-lg hover:bg-gray-700 transition-colors w-full text-left {{ request()->routeIs('bima.index') ? 'bg-blue-500' : '' }}"
+                            aria-expanded="false"
+                            aria-controls="bus-system-insurance"
+                            data-bus-system-toggle="bus-system-insurance"
+                        >
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                            Insurance
+                            <svg class="w-4 h-4 ml-auto transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <ul 
+                            id="bus-system-insurance"
+                            class="bus-system-dropdown-menu hidden absolute left-0 mt-1 w-full bg-gray-700 text-white rounded-lg shadow-lg z-10"
+                            role="menu"
+                        >
+                            <li role="menuitem"><a class="block px-4 py-2 hover:bg-gray-600 rounded-t-lg" href="{{ route('bima.index') }}">Insurance Data</a></li>
+                            <li role="menuitem"><a class="block px-4 py-2 hover:bg-gray-600 rounded-b-lg" href="{{ route('system.cancelled_bookings') }}">Cancelled Bookings</a></li>
+                        </ul>
+                    </div>
                 </li>
                 @endif
 
@@ -145,12 +162,6 @@
                 </li>
                 @endif
 
-                <li>
-                    <a class="flex items-center px-3 py-2 text-white rounded-lg hover:bg-gray-700 transition-colors {{ request()->routeIs('system.cancelled_bookings') ? 'bg-blue-500' : '' }}" href="{{ route('system.cancelled_bookings') }}">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                        Cancelled Bookings
-                    </a>
-                </li>
             @endif
 
             <!-- Account Management Section -->
@@ -185,41 +196,52 @@
 <script>
 (function () {
     // Dropdown handler for Booking History
-    const toggleButton = document.querySelector('[data-bus-system-toggle="bus-system-booking-history"]');
-    const dropdownMenu = document.getElementById('bus-system-booking-history');
+    const bookingHistoryToggle = document.querySelector('[data-bus-system-toggle="bus-system-booking-history"]');
+    const bookingHistoryMenu = document.getElementById('bus-system-booking-history');
 
-    if (toggleButton && dropdownMenu) {
-        // Toggle dropdown visibility and ARIA state
-        toggleButton.addEventListener('click', function (event) {
-            event.preventDefault();
-            const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
-            toggleButton.setAttribute('aria-expanded', !isExpanded);
-            dropdownMenu.classList.toggle('hidden');
-            // Rotate chevron icon
-            const chevron = toggleButton.querySelector('svg:last-child');
-            chevron.classList.toggle('rotate-180');
-        });
+    // Dropdown handler for Insurance
+    const insuranceToggle = document.querySelector('[data-bus-system-toggle="bus-system-insurance"]');
+    const insuranceMenu = document.getElementById('bus-system-insurance');
 
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function (event) {
-            if (!toggleButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
-                toggleButton.setAttribute('aria-expanded', 'false');
-                dropdownMenu.classList.add('hidden');
+    // Function to handle dropdown toggle
+    function handleDropdownToggle(toggleButton, dropdownMenu) {
+        if (toggleButton && dropdownMenu) {
+            // Toggle dropdown visibility and ARIA state
+            toggleButton.addEventListener('click', function (event) {
+                event.preventDefault();
+                const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
+                toggleButton.setAttribute('aria-expanded', !isExpanded);
+                dropdownMenu.classList.toggle('hidden');
+                // Rotate chevron icon
                 const chevron = toggleButton.querySelector('svg:last-child');
-                chevron.classList.remove('rotate-180');
-            }
-        });
+                chevron.classList.toggle('rotate-180');
+            });
 
-        // Close dropdown on Escape key
-        document.addEventListener('keydown', function (event) {
-            if (event.key === 'Escape' && toggleButton.getAttribute('aria-expanded') === 'true') {
-                toggleButton.setAttribute('aria-expanded', 'false');
-                dropdownMenu.classList.add('hidden');
-                const chevron = toggleButton.querySelector('svg:last-child');
-                chevron.classList.remove('rotate-180');
-                toggleButton.focus();
-            }
-        });
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function (event) {
+                if (!toggleButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                    toggleButton.setAttribute('aria-expanded', 'false');
+                    dropdownMenu.classList.add('hidden');
+                    const chevron = toggleButton.querySelector('svg:last-child');
+                    chevron.classList.remove('rotate-180');
+                }
+            });
+
+            // Close dropdown on Escape key
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && toggleButton.getAttribute('aria-expanded') === 'true') {
+                    toggleButton.setAttribute('aria-expanded', 'false');
+                    dropdownMenu.classList.add('hidden');
+                    const chevron = toggleButton.querySelector('svg:last-child');
+                    chevron.classList.remove('rotate-180');
+                    toggleButton.focus();
+                }
+            });
+        }
     }
+
+    // Initialize both dropdowns
+    handleDropdownToggle(bookingHistoryToggle, bookingHistoryMenu);
+    handleDropdownToggle(insuranceToggle, insuranceMenu);
 })();
 </script>

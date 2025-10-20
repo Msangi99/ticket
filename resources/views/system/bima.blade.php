@@ -45,6 +45,7 @@
                             <tr class="bg-gray-100 text-gray-600 uppercase text-xs leading-normal">
                                 <th class="py-2 px-4 text-left font-medium"><input type="text" class="w-full px-2 py-1 border rounded text-xs search-input" placeholder="Search #"></th>
                                 <th class="py-2 px-4 text-left font-medium"><input type="text" class="w-full px-2 py-1 border rounded text-xs search-input" placeholder="Search Booking Code"></th>
+                                <th class="py-2 px-4 text-left font-medium"><input type="text" class="w-full px-2 py-1 border rounded text-xs search-input" placeholder="Search Booking Date"></th>
                                 <th class="py-2 px-4 text-left font-medium"><input type="text" class="w-full px-2 py-1 border rounded text-xs search-input" placeholder="Search Username"></th>
                                 <th class="py-2 px-4 text-left font-medium"><input type="text" class="w-full px-2 py-1 border rounded text-xs search-input" placeholder="Search Phone Number"></th>
                                 <th class="py-2 px-4 text-left font-medium"><input type="text" class="w-full px-2 py-1 border rounded text-xs search-input" placeholder="Search Bus Info"></th>
@@ -57,6 +58,7 @@
                             <tr class="bg-gray-100 text-gray-600 uppercase text-xs leading-normal">
                                 <th class="py-2 px-4 text-left font-medium">#</th>
                                 <th class="py-2 px-4 text-left font-medium">Booking Code</th>
+                                <th class="py-2 px-4 text-left font-medium">Booking Date & Time</th>
                                 <th class="py-2 px-4 text-left font-medium">Username</th>
                                 <th class="py-2 px-4 text-left font-medium">Phone Number</th>
                                 <th class="py-2 px-4 text-left font-medium">Bus Info</th>
@@ -72,6 +74,12 @@
                                 <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
                                     <td class="py-2 px-4">{{ $index + 1 }}</td>
                                     <td class="py-2 px-4">{{ $bima->booking->booking_code ?? 'N/A' }}</td>
+                                    <td class="py-2 px-4">
+                                        <div class="flex flex-col">
+                                            <span class="font-medium">{{ $bima->booking->created_at->format('d M Y') ?? 'N/A' }}</span>
+                                            <span class="text-gray-500 text-xs">{{ $bima->booking->created_at->format('H:i A') ?? 'N/A' }}</span>
+                                        </div>
+                                    </td>
                                     <td class="py-2 px-4">{{ $bima->booking->customer_name ?? 'N/A' }}</td>
                                     <td class="py-2 px-4">{{ $bima->booking->customer_phone ?? 'N/A' }}</td>
                                     <td class="py-2 px-4">
@@ -116,7 +124,7 @@
             // Custom date filtering function
             $.fn.dataTableExt.afnFiltering.push(function (settings, data, dataIndex) {
                 let filterValue = $('#bimaTimeFilter').val();
-                let dateStr = data[5]; // Start Date column (index 5)
+                let dateStr = data[6]; // Start Date column (index 6, moved due to new Booking Date column)
                 let date = moment(dateStr, 'DD MMM YYYY');
 
                 if (!date.isValid()) return true; // Skip invalid dates
