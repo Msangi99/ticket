@@ -83,6 +83,7 @@
                                             <div class="flex flex-col">
                                                 <p class="font-medium mb-0">{{ $booking->booking_code ?? __('vender/history.na') }}</p>
                                                 <p class="text-gray-500 mb-0">{{ __('vender/history.confirmed') }}</p>
+                                                <p class="text-gray-500 mb-0">{{ __('vender/history.paid_time') }}: {{ $booking->created_at->format('d M Y H:i A') }}</p>
                                             </div>
                                         </td>
                                         <td class="py-2 px-4">
@@ -98,7 +99,7 @@
                                                 <p class="text-gray-500 mb-0">{{ __('vender/history.seat') }} {{ $booking->seat ?? __('vender/history.na') }}</p>
                                                 <p class="text-gray-500 mb-0">{{ __('vender/history.pickup') }} {{ $booking->pickup_point ?? __('vender/history.na') }}</p>
                                                 <p class="text-gray-500 mb-0">{{ __('vender/history.drop_point') }} {{ $booking->dropping_point ?? __('vender/history.na') }}</p>
-                                                <p class="text-gray-500 mb-0">{{ __('vender/history.paid_time') }}: {{ $booking->created_at->format('d M Y H:i A') }}</p>
+                                                
                                             </div>
                                         </td>
                                         <td class="py-2 px-4">
