@@ -131,6 +131,10 @@
                 e.target.classList.toggle('bg-gray-700');
 
                 const dateInputs = document.querySelectorAll('input[type="date"]');
+                const timeInputs = document.querySelectorAll('input[type="time"]');
+                const fromSelects = document.querySelectorAll('.from-select');
+                const toSelects = document.querySelectorAll('.to-select');
+                
                 dateInputs.forEach((input, index) => {
                     if (index > 0) {
                         input.readOnly = isEditMode;
@@ -140,6 +144,41 @@
                         }
                     }
                 });
+
+                // Lock/unlock time inputs for all rows except the first
+                timeInputs.forEach((input, index) => {
+                    const rowIndex = Math.floor(index / 2); // Each row has 2 time inputs (start and end)
+                    if (rowIndex > 0) {
+                        input.readOnly = isEditMode;
+                        if (isEditMode) {
+                            // Copy times from first row
+                            const firstRowTimeInputs = document.querySelectorAll('.schedule-row:first-child input[type="time"]');
+                            const timeIndex = index % 2; // 0 for start, 1 for end
+                            input.value = firstRowTimeInputs[timeIndex].value;
+                        }
+                    }
+                });
+
+                // Lock/unlock and apply alternating from/to pattern for all rows
+                if (isEditMode) {
+                    const firstRowFromSelect = document.querySelector('.schedule-row:first-child .from-select');
+                    const firstRowToSelect = document.querySelector('.schedule-row:first-child .to-select');
+                    
+                    if (firstRowFromSelect && firstRowToSelect && firstRowFromSelect.value && firstRowToSelect.value) {
+                        const fromValue = firstRowFromSelect.value;
+                        const toValue = firstRowToSelect.value;
+                        
+                        fromSelects.forEach((select, index) => {
+                            // Alternating pattern: even index gets fromValue, odd index gets toValue
+                            select.value = (index % 2 === 0) ? fromValue : toValue;
+                        });
+
+                        toSelects.forEach((select, index) => {
+                            // Alternating pattern: even index gets toValue, odd index gets fromValue
+                            select.value = (index % 2 === 0) ? toValue : fromValue;
+                        });
+                    }
+                }
             }
         });
 
@@ -156,21 +195,41 @@
             const from = selectedRoute ? selectedRoute[0] : '';
             const to = selectedRoute ? selectedRoute[1] : '';
 
+            // Get first row values for locked mode
+            const firstRowFromSelect = document.querySelector('.schedule-row:first-child .from-select');
+            const firstRowToSelect = document.querySelector('.schedule-row:first-child .to-select');
+            const firstRowTimeInputs = document.querySelectorAll('.schedule-row:first-child input[type="time"]');
+            
+            let lockedFrom = '';
+            let lockedTo = '';
+            
+            if (isEditMode && firstRowFromSelect && firstRowToSelect && firstRowFromSelect.value && firstRowToSelect.value) {
+                // Alternating pattern based on row count
+                const fromValue = firstRowFromSelect.value;
+                const toValue = firstRowToSelect.value;
+                
+                lockedFrom = (rowCount % 2 === 0) ? fromValue : toValue;
+                lockedTo = (rowCount % 2 === 0) ? toValue : fromValue;
+            }
+            
+            const lockedStartTime = isEditMode ? (firstRowTimeInputs[0] ? firstRowTimeInputs[0].value : '') : '';
+            const lockedEndTime = isEditMode ? (firstRowTimeInputs[1] ? firstRowTimeInputs[1].value : '') : '';
+
             newRow.innerHTML = `
                 <div class="col-span-2">
                     <label for="from" class="block text-gray-700 text-sm font-bold mb-2">From</label>
                     <select name="schedules[${rowCount}][from]" class="from-select shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                         <option value="">Select From</option>
-                        ${from ? `<option value="${from}">${from}</option>` : ''}
-                        ${to ? `<option value="${to}">${to}</option>` : ''}
+                        ${from ? `<option value="${from}" ${lockedFrom === from ? 'selected' : ''}>${from}</option>` : ''}
+                        ${to ? `<option value="${to}" ${lockedFrom === to ? 'selected' : ''}>${to}</option>` : ''}
                     </select>
                 </div>
                 <div class="col-span-2">
                     <label for="to" class="block text-gray-700 text-sm font-bold mb-2">To</label>
                     <select name="schedules[${rowCount}][to]" class="to-select shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                         <option value="">Select To</option>
-                        ${from ? `<option value="${from}">${from}</option>` : ''}
-                        ${to ? `<option value="${to}">${to}</option>` : ''}
+                        ${from ? `<option value="${from}" ${lockedTo === from ? 'selected' : ''}>${from}</option>` : ''}
+                        ${to ? `<option value="${to}" ${lockedTo === to ? 'selected' : ''}>${to}</option>` : ''}
                     </select>
                 </div>
                 <div class="col-span-2">
@@ -179,11 +238,11 @@
                 </div>
                 <div class="col-span-2">
                     <label for="start" class="block text-gray-700 text-sm font-bold mb-2">Departure Time</label>
-                    <input type="time" name="schedules[${rowCount}][start]" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" step="60" required>
+                    <input type="time" name="schedules[${rowCount}][start]" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="${lockedStartTime}" step="60" required>
                 </div>
                 <div class="col-span-2">
                     <label for="end" class="block text-gray-700 text-sm font-bold mb-2">Arrival Time</label>
-                    <input type="time" name="schedules[${rowCount}][end]" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" step="60" required>
+                    <input type="time" name="schedules[${rowCount}][end]" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="${lockedEndTime}" step="60" required>
                 </div>
                 <div class="col-span-2 flex items-end gap-2">
                     <button type="button" class="remove-row bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Remove</button>
@@ -275,21 +334,42 @@
                                 } else {
                                     const newRow = document.createElement('div');
                                     newRow.className = 'schedule-row mb-4 grid grid-cols-12 gap-4';
+                                    
+                                    // Get first row values for locked mode
+                                    const firstRowFromSelect = container.querySelector('.schedule-row:first-child .from-select');
+                                    const firstRowToSelect = container.querySelector('.schedule-row:first-child .to-select');
+                                    const firstRowTimeInputs = container.querySelectorAll('.schedule-row:first-child input[type="time"]');
+                                    
+                                    let lockedFrom = schedule.from || '';
+                                    let lockedTo = schedule.to || '';
+                                    
+                                    if (isEditMode && firstRowFromSelect && firstRowToSelect && firstRowFromSelect.value && firstRowToSelect.value) {
+                                        // Alternating pattern based on row count
+                                        const fromValue = firstRowFromSelect.value;
+                                        const toValue = firstRowToSelect.value;
+                                        
+                                        lockedFrom = (rowCount % 2 === 0) ? fromValue : toValue;
+                                        lockedTo = (rowCount % 2 === 0) ? toValue : fromValue;
+                                    }
+                                    
+                                    const lockedStartTime = isEditMode ? (firstRowTimeInputs[0] ? firstRowTimeInputs[0].value : '') : (schedule.start || '');
+                                    const lockedEndTime = isEditMode ? (firstRowTimeInputs[1] ? firstRowTimeInputs[1].value : '') : (schedule.end || '');
+                                    
                                     newRow.innerHTML = `
                                         <div class="col-span-2">
                                             <label for="from" class="block text-gray-700 text-sm font-bold mb-2">From</label>
                                             <select name="schedules[${rowCount}][from]" class="from-select shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                                                 <option value="">Select From</option>
-                                                <option value="${schedule.from}" selected>${schedule.from}</option>
-                                                <option value="${schedule.to}">${schedule.to}</option>
+                                                <option value="${schedule.from}" ${lockedFrom === schedule.from ? 'selected' : ''}>${schedule.from}</option>
+                                                <option value="${schedule.to}" ${lockedFrom === schedule.to ? 'selected' : ''}>${schedule.to}</option>
                                             </select>
                                         </div>
                                         <div class="col-span-2">
                                             <label for="to" class="block text-gray-700 text-sm font-bold mb-2">To</label>
                                             <select name="schedules[${rowCount}][to]" class="to-select shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                                                 <option value="">Select To</option>
-                                                <option value="${schedule.from}">${schedule.from}</option>
-                                                <option value="${schedule.to}" selected>${schedule.to}</option>
+                                                <option value="${schedule.from}" ${lockedTo === schedule.from ? 'selected' : ''}>${schedule.from}</option>
+                                                <option value="${schedule.to}" ${lockedTo === schedule.to ? 'selected' : ''}>${schedule.to}</option>
                                             </select>
                                         </div>
                                         <div class="col-span-2">
@@ -298,11 +378,11 @@
                                         </div>
                                         <div class="col-span-2">
                                             <label for="start" class="block text-gray-700 text-sm font-bold mb-2">Departure Time</label>
-                                            <input type="time" name="schedules[${rowCount}][start]" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="${schedule.start}" step="60" required>
+                                            <input type="time" name="schedules[${rowCount}][start]" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="${lockedStartTime}" step="60" required>
                                         </div>
                                         <div class="col-span-2">
                                             <label for="end" class="block text-gray-700 text-sm font-bold mb-2">Arrival Time</label>
-                                            <input type="time" name="schedules[${rowCount}][end]" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="${schedule.end}" step="60" required>
+                                            <input type="time" name="schedules[${rowCount}][end]" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="${lockedEndTime}" step="60" required>
                                         </div>
                                         <div class="col-span-2 flex items-end gap-2">
                                             <button type="button" class="remove-row bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Remove</button>
@@ -340,6 +420,41 @@
 
             const rows = document.querySelectorAll('.schedule-row');
             rows.forEach(row => populateFromToSelects(row, from, to));
+        });
+
+        // Add event listeners for from/to changes in locked mode
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('from-select') || e.target.classList.contains('to-select')) {
+                if (isEditMode) {
+                    const row = e.target.closest('.schedule-row');
+                    const fromSelect = row.querySelector('.from-select');
+                    const toSelect = row.querySelector('.to-select');
+                    
+                    // Get the first row values to maintain alternating pattern
+                    const firstRowFromSelect = document.querySelector('.schedule-row:first-child .from-select');
+                    const firstRowToSelect = document.querySelector('.schedule-row:first-child .to-select');
+                    
+                    if (firstRowFromSelect && firstRowToSelect && firstRowFromSelect.value && firstRowToSelect.value) {
+                        const fromValue = firstRowFromSelect.value;
+                        const toValue = firstRowToSelect.value;
+                        
+                        // Find the row index
+                        const allRows = document.querySelectorAll('.schedule-row');
+                        const rowIndex = Array.from(allRows).indexOf(row);
+                        
+                        // Apply alternating pattern based on row index
+                        if (rowIndex % 2 === 0) {
+                            // Even rows: from = fromValue, to = toValue
+                            fromSelect.value = fromValue;
+                            toSelect.value = toValue;
+                        } else {
+                            // Odd rows: from = toValue, to = fromValue
+                            fromSelect.value = toValue;
+                            toSelect.value = fromValue;
+                        }
+                    }
+                }
+            }
         });
     </script>
 @endsection

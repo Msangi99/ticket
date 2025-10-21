@@ -119,7 +119,7 @@
                                                 <p class="text-gray-500 font-medium mb-0">System: {{ $booking->fee ?? 'N/A' }}</p>
                                                 <p class="text-gray-500 font-medium mb-0">Vendor: {{ $booking->vender_fee ?? 'N/A' }}</p>
                                                 <p class="text-gray-500 font-medium mb-0">Discount: {{ $booking->discount_amount ?? 'N/A' }}</p>
-                                                <p class="text-gray-500 font-medium mb-0">VAT: {{ $booking->vat ?? 'N/A' }}</p>
+                                                <p class="text-gray-500 font-medium mb-0">Levies: {{ $booking->vat ?? 'N/A' }}</p>
                                             </div>
                                         </td>
                                         <td class="py-2 px-4">
