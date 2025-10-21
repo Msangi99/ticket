@@ -83,7 +83,7 @@
                                             <div class="flex flex-col">
                                                 <p class="font-medium mb-0">{{ $booking->booking_code ?? 'N/A' }}</p>
                                                 <p class="text-gray-500 mb-0">Confirmed</p>
-                                                <p class="text-gray-500 mb-0">Paid Time: {{ $booking->created_at->format('d M Y H:i') }}</p>
+                                                <p class="text-gray-500 mb-0">Pay Time: {{ $booking->created_at->format('d M Y H:i') }}</p>
                                             </div>
                                         </td>
                                         <td class="py-2 px-4">
