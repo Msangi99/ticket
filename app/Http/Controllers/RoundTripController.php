@@ -130,6 +130,87 @@ class RoundTripController extends Controller
         //return view('vender.route', compact('busList', 'departureCityName', 'arrivalCityName', 'departure_date'));
     }
 
+    public function by_routesearch(Request $request)
+    {
+        // Validate the request
+        $validated = $request->validate([
+            'departure_city' => 'required|exists:cities,id',
+            'arrival_city' => 'required|exists:cities,id|different:departure_city',
+            'departure_date' => 'required|date|after_or_equal:today',
+            'bus_type' => 'sometimes|in:any,10,20,30,40',
+            'passengers' => 'sometimes|integer|min:1',
+        ]);
+
+        // Retrieve city names and normalize departure date
+        $departureCityName = City::findOrFail($validated['departure_city'])->name;
+        $arrivalCityName = City::findOrFail($validated['arrival_city'])->name;
+        $departure_date = Carbon::parse($validated['departure_date'])->toDateString();
+
+        session()->put('departure_date', $departure_date);
+
+        // Query buses with relationships and filter by route - only today to future
+        $busQuery = Bus::with([
+            'busname' => function ($query) {
+                $query->where('status', 1);
+            },
+            'route.via',
+            'schedule' => function ($query) use ($departureCityName, $arrivalCityName, $departure_date) {
+                $query->where('from', $departureCityName)
+                    ->where('to', $arrivalCityName)
+                    ->whereDate('schedule_date', '>=', now()->toDateString()); // Only today or future
+            },
+            'booking' => function ($query) use ($departure_date) {
+                $query->where('travel_date', $departure_date)
+                    ->where('payment_status', 'Paid');
+            }
+        ])
+            ->whereHas('busname', function ($query) {
+                $query->where('status', 1);
+            })
+            ->whereHas('schedule', function ($query) use ($departureCityName, $arrivalCityName, $departure_date) {
+                $query->where('from', $departureCityName)
+                    ->where('to', $arrivalCityName)
+                    ->whereDate('schedule_date', '>=', now()->toDateString()); // Only today or future
+            });
+
+        // Add bus class filter if specified and not "any"
+        if (!empty($validated['bus_type']) && $validated['bus_type'] !== 'any') {
+            $busQuery->where('bus_type', $validated['bus_type']);
+        }
+
+        $busList = $busQuery->get()
+            ->map(function ($bus) {
+                return tap($bus, function ($bus) {
+                    // Ensure total_seats is available
+                    $total_seats = $bus->total_seats ?? $bus->busname->total_seats ?? 0;
+
+                    // Calculate booked seats from pre-loaded bookings
+                    $booked_seats = $bus->booking
+                        ->flatMap(function ($booking) {
+                            // Handle comma-separated seats, trim whitespace, and filter valid seats
+                            return array_filter(array_map('trim', explode(',', $booking->seat)));
+                        })
+                        ->unique()
+                        ->count();
+
+                    $bus->booked_seats = $booked_seats;
+                    $bus->remain_seats = $total_seats - $booked_seats;
+
+                    // Ensure remain_seats is not negative
+                    $bus->remain_seats = max(0, $bus->remain_seats);
+                });
+            });
+
+        $data = [
+            'busList' => $busList,
+            'departureCityName' => $departureCityName,
+            'arrivalCityName' => $arrivalCityName,
+            'departure_date' => $departure_date,
+        ];
+
+        return $this->direction('round_1', $data);
+    }
+
     public function by_bus(Request $request)
     {
         //return $request->all();

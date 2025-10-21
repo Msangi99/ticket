@@ -134,8 +134,7 @@
                 <button class="mt-4 w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded-lg font-medium transition-colors duration-200">
                     <i class="fas fa-search mr-2"></i> {{ __('customer/busroot.find_buses') }}
                 </button>
-            </form>
-
+            </form> 
             <!-- Bus Name Form -->
             <form action="{{ route('vender.route') }}" method="GET" class="search-form hidden" id="bus-name-form">
                 @csrf
@@ -163,7 +162,7 @@
             <a href="{{ route('customer.by_route') }}" class="text-indigo-500 hover:text-indigo-600 mt-4 inline-block transition-colors duration-200">{{ __('customer/busroot.search_by_route') }}</a>
         </div>
 
-        @if (!empty($busList))
+        @if (!empty($busData))
             <div class="mt-6 bg-white shadow-md rounded-lg p-6">
                 <h2 class="text-xl font-bold text-gray-800 mb-4">{{ __('customer/busroot.bus_schedules') }}</h2>
                 @if (session('success'))
@@ -184,9 +183,9 @@
                                 <th class="px-4 py-3 text-left">{{ __('customer/busroot.schedule_date') }}</th>
                                 <th class="px-4 py-3 text-left">{{ __('customer/busroot.action') }}</th>
                             </tr>
-                        </thead>
+                        </thead> 
                         <tbody>
-                            @foreach ($busList as $bus)
+                            @foreach ($busData as $bus)
                                 @if (!empty($bus['schedules']))
                                     @foreach ($bus['schedules'] as $schedule)
                                         <tr class="border-b border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors duration-150" data-bus="{{ $bus['bus_number'] ?? 'N/A' }}" data-from="{{ $schedule['from'] ?? 'N/A' }}" data-to="{{ $schedule['to'] ?? 'N/A' }}" data-time="{{ $schedule['start'] ?? 'N/A' }} -> {{ $schedule['end'] ?? 'N/A' }}" data-date="{{ $schedule['schedule_date'] ?? 'N/A' }}">

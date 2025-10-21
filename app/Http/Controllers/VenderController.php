@@ -243,7 +243,7 @@ class VenderController extends Controller
             'departure_city' => 'required|exists:cities,id',
             'arrival_city' => 'required|exists:cities,id|different:departure_city',
             'departure_date' => 'required|date|after_or_equal:today',
-            'bus_class' => 'sometimes|in:any,10,20,30,40',
+            'bus_type' => 'sometimes|in:any,10,20,30,40',
             'passengers' => 'sometimes|integer|min:1',
         ]);
 
@@ -280,13 +280,13 @@ class VenderController extends Controller
             });
 
         // Add bus class filter if specified and not "any"
-        if (!empty($validated['bus_class']) && $validated['bus_class'] !== 'any') {
-            $busQuery->where('bus_type', $validated['bus_class']);
+        if (!empty($validated['bus_type']) && $validated['bus_type'] !== 'any') {
+            $busQuery->where('bus_type', $validated['bus_type']);
         }
 
         //return $busQuery->get();
 
-        $busList = $busQuery->get()
+        $busData = $busQuery->get()
             ->map(function ($bus) {
                 return tap($bus, function ($bus) {
                     // Ensure total_seats is available
@@ -309,9 +309,9 @@ class VenderController extends Controller
                 });
             });
         
-        //return $busList;
+        //return $busData;
 
-        return view('vender.route', compact('busList', 'departureCityName', 'arrivalCityName', 'departure_date'));
+        return view('vender.route', compact('busData', 'departureCityName', 'arrivalCityName', 'departure_date'));
     }
 
     public function booking_form($id, $from, $to)
