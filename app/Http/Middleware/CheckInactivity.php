@@ -23,11 +23,21 @@ class CheckInactivity
             $inactivityLimit = config('session.lifetime'); // In minutes
 
             if ($lastActivity && Carbon::now()->diffInMinutes(Carbon::parse($lastActivity)) >= $inactivityLimit) {
+                $user = Auth::user();
+                
+                // Check if user is vendor, admin, or bus owner before resetting two_factor_confirmed_at
+                if (in_array($user->role, ['admin', 'bus_campany', 'vender', 'local_bus_owner'])) {
+                    $user->two_factor_confirmed_at = null;
+                    $user->save();
+                    
+                    \Log::info('Session timeout: Reset two_factor_confirmed_at for user ID: ' . $user->id . ' (Role: ' . $user->role . ')');
+                }
+                
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
 
-                return redirect()->route('login')->with('error', 'You have been logged out due to inactivity.');
+                return redirect()->route('login')->with('error', 'Your session has expired due to inactivity. Please log in again.');
             }
 
             Session::put('last_activity_time', Carbon::now());

@@ -40,91 +40,121 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
+        // Enhanced validation with custom error messages
         $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
+            'email' => ['required', 'email', 'max:255'],
+            'password' => ['required', 'min:8'],
+        ], [
+            'email.required' => 'Email address is required.',
+            'email.email' => 'Please enter a valid email address.',
+            'email.max' => 'Email address must not exceed 255 characters.',
+            'password.required' => 'Password is required.',
+            'password.min' => 'Password must be at least 8 characters long.',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        try {
+            $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
-            return back()->withErrors([
-                'email' => 'The provided credentials do not match our records.',
-            ])->onlyInput('email');
-        }
+            if (!$user) {
+                return back()->withErrors([
+                    'email' => 'No account found with this email address. Please check your email or register for a new account.',
+                ])->withInput($request->only('email'));
+            }
 
-        // Check if the account is locked
-        if ($user->locked_until && $user->locked_until > now()) {
-            $minutes = ceil($user->locked_until->diffInMinutes(now()));
-            return back()->withErrors([
-                'email' => "Your account is locked. Please try again in {$minutes} minutes.",
-            ])->onlyInput('email');
-        }
+            // Check if the account is locked
+            if ($user->locked_until && $user->locked_until > now()) {
+                $minutes = ceil($user->locked_until->diffInMinutes(now()));
+                return back()->withErrors([
+                    'email' => "Your account has been temporarily locked due to multiple failed login attempts. Please try again in {$minutes} minutes.",
+                ])->withInput($request->only('email'));
+            }
 
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            $request->session()->regenerate();
+            // Check if account is active
+            if (!$user->isActive()) {
+                return back()->withErrors([
+                    'email' => 'Your account is currently inactive. Please contact support for assistance.',
+                ])->withInput($request->only('email'));
+            }
 
-            // Reset failed attempts and locked_until on successful login
-            $user->failed_attempts = 0;
-            $user->locked_until = null;
-            $user->save();
+            if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->boolean('remember'))) {
+                $request->session()->regenerate();
 
-            // Check email verification for customers on every login
-            if ($user->role === 'customer') {
-                // Generate verification code and send email
-                $verificationCode = $user->generateVerificationCode();
+                // Reset failed attempts and locked_until on successful login
+                $user->failed_attempts = 0;
+                $user->locked_until = null;
+                $user->save();
 
-                try {
-                    Mail::to($user->email)->send(new EmailVerification($user, $verificationCode));
-                } catch (\Exception $e) {
-                    Log::error('Failed to send verification email: ' . $e->getMessage());
+                // Check email verification for customers on every login
+                if ($user->role === 'customer') {
+                    // Generate verification code and send email
+                    $verificationCode = $user->generateVerificationCode();
+
+                    try {
+                        Mail::to($user->email)->send(new EmailVerification($user, $verificationCode));
+                    } catch (\Exception $e) {
+                        Log::error('Failed to send verification email: ' . $e->getMessage());
+                        return back()->withErrors([
+                            'email' => 'Login successful but failed to send verification email. Please try again or contact support.',
+                        ])->withInput($request->only('email'));
+                    }
+
+                    // Store user ID in session for verification instead of logging out
+                    $request->session()->put('verification_user_id', $user->id);
+                    $request->session()->put('verification_email', $user->email);
+
+                    return redirect()->route('email.verification.show')
+                        ->with('email', $user->email)
+                        ->with('status', 'Please verify your email address. A verification code has been sent to your email.');
                 }
 
-                // Store user ID in session for verification instead of logging out
-                $request->session()->put('verification_user_id', $user->id);
-                $request->session()->put('verification_email', $user->email);
-
-                return redirect()->route('email.verification.show')
-                    ->with('email', $user->email)
-                    ->with('status', 'Please verify your email address. A verification code has been sent to your email.');
-            }
-
-            // Check for MFA setup for specific roles
-            if (in_array($user->role, ['admin', 'bus_campany', 'vender'])) {
-                if ($user->two_factor_secret == null) {
-                    return redirect()->route('two-factor.setup')->with('status', 'Please enable Two-Factor Authentication for your account.');
-                }else{
-                    return redirect()->route('two-factor.login')->with('status', 'Please enable Two-Factor Authentication for your account.');
+                // Check for MFA setup for specific roles
+                if (in_array($user->role, ['admin', 'bus_campany', 'vender'])) {
+                    if ($user->two_factor_secret == null) {
+                        return redirect()->route('two-factor.setup')->with('status', 'Please enable Two-Factor Authentication for your account.');
+                    } else {
+                        return redirect()->route('two-factor.login')->with('status', 'Please complete Two-Factor Authentication to continue.');
+                    }
                 }
+
+                // Redirect based on user role with success message
+                $successMessage = 'Welcome back, ' . $user->name . '! You have been successfully logged in.';
+                
+                if ($user->role === 'bus_campany' || $user->role === 'local_bus_owner') {
+                    return redirect()->route('index')->with('success', $successMessage);
+                } else if ($user->role === 'admin') {
+                    return redirect()->route('system.index')->with('success', $successMessage);
+                } else if ($user->role === 'vender') {
+                    return redirect()->route('vender.index')->with('success', $successMessage);
+                } else if ($user->role === 'customer') {
+                    return redirect()->route('customer.index')->with('success', $successMessage);
+                }
+
+                return redirect()->route('home')->with('success', $successMessage);
             }
 
-            if ($user->role === 'bus_campany' || $user->role === 'local_bus_owner') {
-                return redirect()->route('index')->with('success', 'Logged in successfully.');
-            } else if ($user->role === 'admin') {
-                return redirect()->route('system.index')->with('success', 'Login successful.');
-            } else if ($user->role === 'vender') {
-                return redirect()->route('vender.index')->with('success', 'Login successful.');
-            } else if ($user->role === 'customer') {
-                return redirect()->route('customer.index')->with('success', 'Login successful.');
+            // Increment failed attempts on failed login
+            $user->increment('failed_attempts');
+
+            if ($user->failed_attempts >= 5) {
+                $user->locked_until = now()->addMinutes(5); // Lock for 5 minutes
+                $user->save();
+                return back()->withErrors([
+                    'email' => 'Too many failed login attempts. Your account has been temporarily locked for 5 minutes for security reasons.',
+                ])->withInput($request->only('email'));
             }
 
-            return redirect()->route('home')->with('success', 'Logged in successfully.');
-        }
-
-        // Increment failed attempts on failed login
-        $user->increment('failed_attempts');
-
-        if ($user->failed_attempts >= 5) {
-            $user->locked_until = now()->addMinutes(5); // Lock for 5 minutes
-            $user->save();
+            // Show remaining attempts
+            $remainingAttempts = 5 - $user->failed_attempts;
             return back()->withErrors([
-                'email' => 'Too many failed login attempts. Your account has been locked for 5 minutes.',
-            ])->onlyInput('email');
-        }
+                'email' => 'Invalid password. Please check your password and try again. (' . $remainingAttempts . ' attempts remaining)',
+            ])->withInput($request->only('email'));
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email');
+        } catch (\Exception $e) {
+            Log::error('Login error: ' . $e->getMessage() . ' | Stack: ' . $e->getTraceAsString());
+            return back()->withErrors([
+                'email' => 'An unexpected error occurred during login. Please try again later.',
+            ])->withInput($request->only('email'));
+        }
     }
 
     /**
@@ -228,10 +258,14 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        //Auth::user()->two_factor_secret = null;
-        //Auth::user()->two_factor_recovery_codes = null;
-        Auth::user()->two_factor_confirmed_at = null;
-        Auth::user()->save();
+        // Check if user is logged in and has specific roles before resetting two_factor_confirmed_at
+        if (Auth::check()) {
+            $user = Auth::user();
+            if (in_array($user->role, ['admin', 'bus_campany', 'vender', 'local_bus_owner'])) {
+                $user->two_factor_confirmed_at = null;
+                $user->save();
+            }
+        }
 
         Auth::logout();
 
@@ -239,6 +273,36 @@ class AuthController extends Controller
         $request->session()->regenerateToken(); 
 
         return redirect('/')->with('success', 'Logged out successfully.');
+    }
+
+    /**
+     * Handle session timeout - reset two_factor_confirmed_at for specific roles
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function handleSessionTimeout(Request $request)
+    {
+        // Check if user is logged in
+        if (Auth::check()) {
+            $user = Auth::user();
+            
+            // Check if user is vendor, admin, or bus owner
+            if (in_array($user->role, ['admin', 'bus_campany', 'vender', 'local_bus_owner'])) {
+                // Reset two_factor_confirmed_at to null
+                $user->two_factor_confirmed_at = null;
+                $user->save();
+                
+                Log::info('Session timeout: Reset two_factor_confirmed_at for user ID: ' . $user->id . ' (Role: ' . $user->role . ')');
+            }
+        }
+
+        // Logout the user
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')->with('error', 'Your session has expired. Please log in again.');
     }
 
 

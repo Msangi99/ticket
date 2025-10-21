@@ -113,6 +113,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/session-timeout', [AuthController::class, 'handleSessionTimeout'])->name('session.timeout');
 
 Route::view('/about', 'about')->name('about');
 Route::view('/contact', 'contact')->name('contact');

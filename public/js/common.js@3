@@ -873,3 +873,26 @@ $(document).ready(function() {
         }
     });
 });
+
+// Session timeout handling
+function handleSessionTimeout() {
+    // Redirect to session timeout route which will handle the two-factor reset
+    window.location.href = '/session-timeout';
+}
+
+// Check for session timeout on page load
+$(document).ready(function() {
+    // Check if there's a session timeout error in the URL or session
+    if (window.location.search.includes('session_timeout=1') || 
+        (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('session_timeout'))) {
+        handleSessionTimeout();
+    }
+});
+
+// Monitor for 401 Unauthorized responses (session expired)
+$(document).ajaxError(function(event, xhr, settings) {
+    if (xhr.status === 401) {
+        // Session expired, redirect to session timeout handler
+        handleSessionTimeout();
+    }
+});
