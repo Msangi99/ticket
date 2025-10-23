@@ -49,10 +49,10 @@
                             <div class="text-gray-500 mx-2">
                                 @php
                                     $durationText = 'N/A';
-                                    if ($bus->route && $bus->route->route_start && $bus->route->route_end) {
+                                    if ($bus->route && $bus->schedule->start && $bus->schedule->end) {
                                         try {
-                                            $startTime = \Carbon\Carbon::parse($bus->route->route_start);
-                                            $endTime = \Carbon\Carbon::parse($bus->route->route_end);
+                                            $startTime = \Carbon\Carbon::parse($bus->schedule->start);
+                                            $endTime = \Carbon\Carbon::parse($bus->schedule->end);
                                             
                                             if ($endTime->lessThan($startTime)) {
                                                 $endTime->addDay();
@@ -74,8 +74,8 @@
 
                         <!-- Timing -->
                         <div class="flex justify-between text-xs text-white mb-3">
-                            <div>{{ $bus->route->route_start ?? 'N/A' }}</div>
-                            <div>{{ $bus->route->route_end ?? 'N/A' }}</div>
+                            <div>{{ $bus->schedule->start ?? 'N/A' }}</div>
+                            <div>{{ $bus->schedule->end ?? 'N/A' }}</div>
                         </div>
 
                         <!-- Price & CTA -->

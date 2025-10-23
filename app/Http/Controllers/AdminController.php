@@ -777,7 +777,7 @@ $q->where('id', auth()->user()->campany->id);
             ->whereHas('bus', function ($query) {
                 $query->where('campany_id', auth()->user()->campany->id);
             })
-            ->latest()
+            ->orderBy('travel_date', 'asc')
             ->get();
 
         //toastr('Before delete schedule check if havent booked yet', 'success');
