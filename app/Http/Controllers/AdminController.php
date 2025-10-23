@@ -777,6 +777,7 @@ $q->where('id', auth()->user()->campany->id);
             ->whereHas('bus', function ($query) {
                 $query->where('campany_id', auth()->user()->campany->id);
             })
+            ->whereDate('travel_date', '>=', today())
             ->orderBy('travel_date', 'asc')
             ->get();
 
