@@ -773,13 +773,17 @@ $q->where('id', auth()->user()->campany->id);
 
     public function schedules()
     {
-        $schedules = Schedule::with(['bus.busname'])
-            ->whereHas('bus', function ($query) {
-                $query->where('campany_id', auth()->user()->campany->id);
-            })
-            ->whereDate('schedule_date', '>=', today())
-            ->orderBy('schedule_date', 'asc')
-            ->get();
+        $schedules = Schedule::with(['bus:id,busname'])
+        ->whereHas('bus', fn ($q) =>
+            $q->where('campany_id', auth()->user()->campany->id)
+        )
+        // filter: today and future
+        ->whereRaw("STR_TO_DATE(schedule_date, '%Y-%m-%d') >= CURDATE()")
+        // sort by real date (then by time/created_at to stabilize ties if needed)
+        ->orderByRaw("STR_TO_DATE(schedule_date, '%Y-%m-%d') ASC")
+        // ->orderBy('created_at', 'asc') // optional secondary
+        ->get();
+    
 
         //toastr('Before delete schedule check if havent booked yet', 'success');
         return view('controller.schedules', compact('schedules'));
