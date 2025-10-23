@@ -17,4 +17,5 @@ return [
     'account' => 'Account',
     'profile' => 'Profile',
     'logout' => 'Logout',
+    'resaved_tickets' => 'Resaved Tickets'
 ];

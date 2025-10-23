@@ -17,4 +17,5 @@ return [
     'account' => 'Akaunti',
     'profile' => 'Wasifu',
     'logout' => 'Ondoka',
+    'resaved_tickets' => 'Tiketi Zilizohifadhiwa'
 ];
