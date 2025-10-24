@@ -17,5 +17,6 @@ return [
     'account' => 'Account',
     'profile' => 'Profile',
     'logout' => 'Logout',
-    'resaved_tickets' => 'Resaved Tickets'
+    'resaved_tickets' => 'Reserved Tickets',
+    'local_bus_owners' => 'Bus Owner Assistance',
 ];

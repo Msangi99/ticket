@@ -17,5 +17,6 @@ return [
     'account' => 'Akaunti',
     'profile' => 'Wasifu',
     'logout' => 'Ondoka',
-    'resaved_tickets' => 'Tiketi Zilizohifadhiwa'
+    'resaved_tickets' => 'Tiketi Zilizohifadhiwa',
+    'local_bus_owners' => 'Msaidizi',
 ];
