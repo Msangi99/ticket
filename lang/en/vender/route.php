@@ -31,7 +31,7 @@ return [
     'point_mode' => 'Point Mode',
     'point_name' => 'Point Name',
     'amount_tsh' => 'Amount (Tsh)',
-    'action' => 'Action',
+    'actions' => 'Action',
     'pickup_point' => 'Pickup Point',
     'dropping_point' => 'Dropping Point',
     'enter_point_name' => 'Enter point name',

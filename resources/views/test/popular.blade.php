@@ -9,8 +9,9 @@ $cars = bus::with('campany', 'route', 'schedule')
         $query->where('status', 1);
     })
     ->whereHas('schedule', function ($query) {
-        $query->where('schedule_date', '>', now());
+        $query->where('schedule_date','=', now());
     })
+    ->limit(4)
     ->get();
 ?>
 
@@ -29,6 +30,7 @@ $cars = bus::with('campany', 'route', 'schedule')
                 <?php if ($bus->routes->isNotEmpty()): ?>
                 <?php $firstRoute = $bus->routes->first(); ?>
                 <div class="glass-card p-6 route-card fade-in delay-100">
+                <h3 class="font-bold"><?= $bus->campany->name ?? 'N/A' ?></h3>
                     <div class="flex justify-between items-start mb-4">
                         <div>
                                 <h3 class="font-bold text-xl"><?= $firstRoute->schedule->from ?? 'N/A' ?></h3>
