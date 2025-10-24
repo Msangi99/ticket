@@ -436,7 +436,7 @@
                                         <label for="route_price"
                                             class="block text-sm font-medium text-gray-700 mb-1">{{ __('vender/mybus.route_price') }}</label>
                                         <input type="number" step="0.01" id="route_price" name="route_price"
-                                            value="{{ old('route_price', $bus->route->price) }}"
+                                            value="{{ old('route_price', $bus->route->price ?? '') }}"
                                             class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-teal-400 focus:border-teal-500 bg-gray-50/50 text-gray-900 transition-all duration-200 @error('route_price') border-red-400 focus:ring-red-400 @enderror"
                                             required>
                                         @error('route_price')
@@ -449,7 +449,7 @@
                                         <div class="flex gap-2">
                                             <input type="number" step="0.01" id="route_distance"
                                                 name="route_distance"
-                                                value="{{ old('route_distance', $bus->route->distance) }}"
+                                                value="{{ old('route_distance', $bus->route->distance ?? '') }}"
                                                 class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-gray-100 text-gray-900 transition-all duration-200 @error('route_distance') border-red-400 @enderror"
                                                 readonly>
                                             <button type="button"
