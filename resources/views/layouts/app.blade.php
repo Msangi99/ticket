@@ -102,13 +102,6 @@
     <div class="sidebar-overlay"></div>
 
     <div class="d-flex">
-        <!-- Sidebar -->
-        <nav id="sidebar" class="sidebar bg-dark">
-            <button class="sidebar-close-btn" id="sidebarCloseBtn">
-                <i class="bi bi-x"></i>
-            </button>
-            
-        </nav>
 
         <!-- Main Content -->
         <div class="main-content w-100">
