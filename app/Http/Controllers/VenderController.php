@@ -319,7 +319,7 @@ class VenderController extends Controller
                 });
             });
 
-        return view('vender.route', compact('busData', 'departureCityName', 'arrivalCityName', 'departure_date'));
+        return view('vender.route', compact('busList', 'departureCityName', 'arrivalCityName', 'departure_date'));
     }
 
     public function booking_form($id, $from, $to)
