@@ -297,8 +297,8 @@ class AdminController extends Controller
             'seate_json' => 'nullable|string',
             'route_from' => 'required|string',
             'route_to' => 'required|string',
-            'route_start' => 'required',
-            'route_end' => 'required|after_or_equal:route_start',
+            'route_start' => 'nullable',
+            'route_end' => 'nullable|after_or_equal:route_start',
             'route_price' => 'required|numeric|min:0',
         ]);
 
@@ -338,8 +338,8 @@ class AdminController extends Controller
                 'bus_id' => $bus_id,
                 'from' => $request->route_from,
                 'to' => $request->route_to,
-                'route_start' => $request->route_start,
-                'route_end' => $request->route_end,
+                'route_start' => $request->route_start ?? '',
+                'route_end' => $request->route_end ?? '',
                 'price' => $request->route_price,
                 'distance' => $request->route_distance ?? 0, // Optional distance field
             ];
@@ -377,8 +377,8 @@ class AdminController extends Controller
             'bus_model' => 'nullable|string|max:255',
             'route_from' => 'required|string',
             'route_to' => 'required|string',
-            'route_start' => 'required',
-            'route_end' => 'required|after_or_equal:route_start',
+            'route_start' => 'nullable',
+            'route_end' => 'nullable|after_or_equal:route_start',
             'route_price' => 'required|numeric|min:0',
         ]);
 
@@ -413,9 +413,9 @@ class AdminController extends Controller
         $info = [
             'from' => $request->route_from,
             'to' => $request->route_to,
-            'route_start' => $request->route_start,
-            'route_end' => $request->route_end,
-            'price' => $request->route_price,
+            'route_start' => $request->route_start ?? '',
+            'route_end' => $request->route_end ?? '',
+            'price' => $request->route_price ?? '',
         ];
 
         $res = route::where('bus_id', $request->bus_id)->update($info);

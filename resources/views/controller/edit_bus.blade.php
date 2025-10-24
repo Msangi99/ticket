@@ -407,7 +407,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {{--<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label for="route_start"
                                             class="block text-sm font-medium text-gray-700 mb-1">{{ __('vender/mybus.route_start_time') }}</label>
@@ -430,7 +430,7 @@
                                             <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
                                         @enderror
                                     </div>
-                                </div>
+                                </div>--}}
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label for="route_price"
