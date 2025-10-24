@@ -107,7 +107,7 @@
             <button class="sidebar-close-btn" id="sidebarCloseBtn">
                 <i class="bi bi-x"></i>
             </button>
-            @include('partials.sidebar')
+            
         </nav>
 
         <!-- Main Content -->
