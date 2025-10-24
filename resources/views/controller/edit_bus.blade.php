@@ -378,7 +378,7 @@
                                             @if (isset($cities))
                                                 @foreach ($cities as $city)
                                                     <option value="{{ $city->name }}"
-                                                        {{ old('route_from', $bus->route->from) == $city->name ? 'selected' : '' }}>
+                                                        {{ old('route_from', $bus->route->from ?? '') == $city->name ? 'selected' : '' }}>
                                                         {{ $city->name }}</option>
                                                 @endforeach
                                             @endif
@@ -397,7 +397,7 @@
                                             @if (isset($cities))
                                                 @foreach ($cities as $city)
                                                     <option value="{{ $city->name }}"
-                                                        {{ old('route_to', $bus->route->to) == $city->name ? 'selected' : '' }}>
+                                                        {{ old('route_to', $bus->route->to ?? '') == $city->name ? 'selected' : '' }}>
                                                         {{ $city->name }}</option>
                                                 @endforeach
                                             @endif

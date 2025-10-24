@@ -53,7 +53,7 @@
                             <path d="M12 5v6H5v2h7v6h2v-6h7v-2h-7V5h-2z"/>
                         </svg>
                         {{ __('vender/mybus.add_new_bus') }}
-                    </a>w
+                    </a>
                 </div>
             </div>
 
