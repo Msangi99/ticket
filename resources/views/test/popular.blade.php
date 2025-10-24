@@ -3,13 +3,14 @@
 use App\Models\bus;
 use App\Models\Campany;
 use App\Models\Schedule;
+use Carbon\Carbon;
 
 $cars = bus::with('campany', 'route', 'schedule')
     ->whereHas('campany', function ($query) {
         $query->where('status', 1);
     })
     ->whereHas('schedule', function ($query) {
-        $query->where('schedule_date','=', now());
+        $query->where('schedule_date','=', Carbon::now()->toDateString());
     })
     ->limit(4)
     ->get();
