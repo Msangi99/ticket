@@ -157,7 +157,7 @@ class RoundTripController extends Controller
             'schedule' => function ($query) use ($departureCityName, $arrivalCityName, $departure_date) {
                 $query->where('from', $departureCityName)
                     ->where('to', $arrivalCityName)
-                    ->whereDate('schedule_date', '>=', now()->toDateString()); // Only today or future
+                    ->where('schedule_date', $departure_date); // Only selected departure date
             },
             'booking' => function ($query) use ($departure_date) {
                 $query->where('travel_date', $departure_date)
@@ -170,7 +170,7 @@ class RoundTripController extends Controller
             ->whereHas('schedule', function ($query) use ($departureCityName, $arrivalCityName, $departure_date) {
                 $query->where('from', $departureCityName)
                     ->where('to', $arrivalCityName)
-                    ->whereDate('schedule_date', '>=', now()->toDateString()); // Only today or future
+                    ->where('schedule_date', $departure_date); // Only selected departure date
             });
 
         // Add bus class filter if specified and not "any"
