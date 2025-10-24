@@ -254,13 +254,13 @@ class VenderController extends Controller
 
         session()->put('departure_date', $departure_date);
 
-        // Only include buses where schedule date is today or in the future
+        // Query buses with relationships and filter by route - only today to future
         $busQuery = Bus::with([
             'busname' => function ($query) {
-                $query->where('status', 1); 
+                $query->where('status', 1);
             },
             'route.via',
-            'schedule' => function ($query) use ($departureCityName, $arrivalCityName, $departure_date) {
+            'schedules' => function ($query) use ($departureCityName, $arrivalCityName, $departure_date) {
                 $query->where('from', $departureCityName)
                     ->where('to', $arrivalCityName)
                     ->where('schedule_date', $departure_date)
@@ -269,7 +269,7 @@ class VenderController extends Controller
                         if ($departure_date === Carbon::now()->toDateString()) {
                             $timeQuery->where('start', '>', Carbon::now()->toTimeString());
                         }
-                    });// Only today or future
+                    });
             },
             'booking' => function ($query) use ($departure_date) {
                 $query->where('travel_date', $departure_date)
@@ -279,7 +279,7 @@ class VenderController extends Controller
             ->whereHas('busname', function ($query) {
                 $query->where('status', 1);
             })
-            ->whereHas('schedule', function ($query) use ($departureCityName, $arrivalCityName, $departure_date) {
+            ->whereHas('schedules', function ($query) use ($departureCityName, $arrivalCityName, $departure_date) {
                 $query->where('from', $departureCityName)
                     ->where('to', $arrivalCityName)
                     ->where('schedule_date', $departure_date)
@@ -296,9 +296,7 @@ class VenderController extends Controller
             $busQuery->where('bus_type', $validated['bus_type']);
         }
 
-        //return $busQuery->get();
-
-        $busData = $busQuery->get()
+        $busList = $busQuery->get()
             ->map(function ($bus) {
                 return tap($bus, function ($bus) {
                     // Ensure total_seats is available
@@ -320,8 +318,6 @@ class VenderController extends Controller
                     $bus->remain_seats = max(0, $bus->remain_seats);
                 });
             });
-        
-        //return $busData;
 
         return view('vender.route', compact('busData', 'departureCityName', 'arrivalCityName', 'departure_date'));
     }
