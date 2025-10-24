@@ -162,7 +162,7 @@
             <a href="{{ route('customer.by_route') }}" class="text-indigo-500 hover:text-indigo-600 mt-4 inline-block transition-colors duration-200">{{ __('customer/busroot.search_by_route') }}</a>
         </div>
 
-        @if (!empty($busData))
+        @if (!empty($busList))
             <div class="mt-6 bg-white shadow-md rounded-lg p-6">
                 <h2 class="text-xl font-bold text-gray-800 mb-4">{{ __('customer/busroot.bus_schedules') }}</h2>
                 @if (session('success'))
@@ -185,7 +185,7 @@
                             </tr>
                         </thead> 
                         <tbody>
-                            @foreach ($busData as $bus)
+                            @foreach ($busList as $bus)
                                 @if (!empty($bus['schedules']))
                                     @foreach ($bus['schedules'] as $schedule)
                                         <tr class="border-b border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors duration-150" data-bus="{{ $bus['bus_number'] ?? 'N/A' }}" data-from="{{ $schedule['from'] ?? 'N/A' }}" data-to="{{ $schedule['to'] ?? 'N/A' }}" data-time="{{ $schedule['start'] ?? 'N/A' }} -> {{ $schedule['end'] ?? 'N/A' }}" data-date="{{ $schedule['schedule_date'] ?? 'N/A' }}">
