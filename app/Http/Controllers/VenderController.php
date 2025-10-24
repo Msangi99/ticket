@@ -257,13 +257,19 @@ class VenderController extends Controller
         // Only include buses where schedule date is today or in the future
         $busQuery = Bus::with([
             'busname' => function ($query) {
-                $query->where('status', 1);
+                $query->where('status', 1); 
             },
             'route.via',
             'schedule' => function ($query) use ($departureCityName, $arrivalCityName, $departure_date) {
                 $query->where('from', $departureCityName)
                     ->where('to', $arrivalCityName)
-                    ->whereDate('schedule_date', '>=', now()->toDateString()); // Only today or future
+                    ->where('schedule_date', $departure_date)
+                    ->where(function ($timeQuery) use ($departure_date) {
+                        // If it's today, only show schedules that haven't started yet
+                        if ($departure_date === Carbon::now()->toDateString()) {
+                            $timeQuery->where('start', '>', Carbon::now()->toTimeString());
+                        }
+                    });// Only today or future
             },
             'booking' => function ($query) use ($departure_date) {
                 $query->where('travel_date', $departure_date)
@@ -276,7 +282,13 @@ class VenderController extends Controller
             ->whereHas('schedule', function ($query) use ($departureCityName, $arrivalCityName, $departure_date) {
                 $query->where('from', $departureCityName)
                     ->where('to', $arrivalCityName)
-                    ->whereDate('schedule_date', '>=', now()->toDateString());
+                    ->where('schedule_date', $departure_date)
+                    ->where(function ($timeQuery) use ($departure_date) {
+                        // If it's today, only show schedules that haven't started yet
+                        if ($departure_date === Carbon::now()->toDateString()) {
+                            $timeQuery->where('start', '>', Carbon::now()->toTimeString());
+                        }
+                    });
             });
 
         // Add bus class filter if specified and not "any"
