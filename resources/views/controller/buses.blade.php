@@ -108,8 +108,7 @@
                                             </a>
 
                                             <form action="{{ route('bus.delete') }}" method="POST" onsubmit="return confirm('{{ __('vender/mybus.confirm_delete_bus') }}')">
-                                                @csrf
-                                                @method('DELETE')
+                                                @csrf 
                                                 <input type="hidden" name="bus_id" value="{{ $bus->id }}">
                                                 <button type="submit" class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-all duration-200">
                                                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">

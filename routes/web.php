@@ -199,7 +199,7 @@ Route::middleware('auth')->group(function () {
     // Bus Company Routes (Accessible only to bus_company role)
     
     Route::prefix('bus-company')->middleware(['role:bus_campany,local_bus_owner', '2fa'])->group(function () {
-        Route::get('/', [AdminController::class, 'index'])->name('index');
+        Route::get('/', [AdminController::class, 'indbusesex'])->name('index');
         Route::get('/buses', [AdminController::class, 'buses'])->name('buses');
         Route::get('/add_bus', [AdminController::class, 'add_bus'])->name('add_bus');
         Route::post('/add_bus', [AdminController::class, 'get_bus'])->name('add_bus.store');
