@@ -15,5 +15,7 @@ return [
     'bus' => 'Bus',
     'route' => 'Route',
     'time' => 'Time',
+    'deperture_time' => 'Departure Time',
+    'arrival_time' => 'Arrival Time',
     'date' => 'Date',
 ];

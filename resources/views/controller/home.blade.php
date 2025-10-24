@@ -119,7 +119,7 @@
                                     <tr>
                                         <th class="text-xs font-semibold text-gray-500 uppercase py-2">{{ __('vender/dashboard.bus') }}</th>
                                         <th class="text-xs font-semibold text-gray-500 uppercase py-2">{{ __('vender/dashboard.route') }}</th>
-                                        <th class="text-xs font-semibold text-gray-500 uppercase py-2">{{ __('vender/dashboard.time') }}</th>
+                                        <th class="text-xs font-semibold text-gray-500 uppercase py-2">{{ __('vender/dashboard.deperture_time') }}</th>
                                         <th class="text-xs font-semibold text-gray-500 uppercase py-2">{{ __('vender/dashboard.date') }}</th>
                                     </tr>
                                 </thead>
@@ -133,7 +133,7 @@
                                                 <p class="text-xs font-semibold text-gray-900">{{ $trip['route'] }}</p>
                                             </td>
                                             <td class="py-3">
-                                                <p class="text-xs font-semibold text-gray-900">{{ $trip['time'] }}</p>
+                                                <p class="text-xs font-semibold text-gray-900">{{ $trip['start'] }}</p>
                                             </td>
                                             <td class="py-3">
                                                 <p class="text-xs font-semibold text-gray-900">{{ $trip['schedule_date'] }}</p>

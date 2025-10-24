@@ -99,7 +99,8 @@ class AdminController extends Controller
                 'time' => $schedule->schedule_date ? Carbon::parse($schedule->schedule_date)->format('h:i A') : 'N/A',
                 'status' => $this->determineTripStatus($schedule),
                 'status_class' => $this->determineTripStatusClass($schedule),
-                'schedule_date' => $schedule->schedule_date ? Carbon::parse($schedule->schedule_date)->format('Y-m-d') : 'N/A',
+                'start' => $schedule->schedule_date ? Carbon::parse($schedule->start)->format('h:i A') : 'N/A',
+                'schedule_date' => $schedule->schedule_date ? Carbon::parse($schedule->schedule_date)->format('d-m-Y') : 'N/A',
             ]);
 
         return view('controller.home', compact('summary', 'recentBookings', 'todaysTrips'));
