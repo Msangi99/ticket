@@ -207,7 +207,7 @@
                                                         class="text-black w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
                                                 </div>
                                                 
-                                                <div>
+                                                <!-- <div>
                                                     <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">{{ __('all.first_name') }}</label>
                                                     <input type="text" name="first_name" id="first_name"
                                                         class="text-black w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -233,7 +233,7 @@
                                                     <input type="email" name="customer_email" id="email"
                                                         class="text-black w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                         placeholder="{{ __('all.enter_email_address') }}" required>
-                                                </div>
+                                                </div> -->
                                                 
                                                 <div class="flex items-start">
                                                     <div class="flex items-center h-5">
