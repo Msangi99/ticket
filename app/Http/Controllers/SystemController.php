@@ -52,8 +52,9 @@ class SystemController extends Controller
         $service = SystemBalance::sum('balance');
         $fees = PaymentFees::sum('amount');
         $balance = AdminWallet::sum('balance');
+        $cancelledAmount = CancelledBookings::sum('amount');
 
-        return view('system.dashboard', compact('bookings', 'todayAmount', 'weeklyAmounts', 'service', 'fees', 'bima', 'balance'));
+        return view('system.dashboard', compact('bookings', 'todayAmount', 'weeklyAmounts', 'service', 'fees', 'bima', 'balance', 'cancelledAmount'));
     }
 
     public function buses()

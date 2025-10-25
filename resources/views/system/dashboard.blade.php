@@ -81,6 +81,24 @@
                 </div>
             </a>
         </div>
+
+        <!-- Total Cancelled Bookings Card -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-gradient-to-br from-red-50 to-red-100 border border-red-100 rounded-xl p-6 transition-all hover:shadow-md hover:border-red-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-red-600">Cancelled Bookings</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">Tsh.{{ number_format($cancelledAmount, 2) }}</h3>
+                    </div>
+                    <div class="p-3 rounded-lg bg-red-100 text-red-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+                </div>
+                <p class="text-xs text-red-500 mt-2">Total cancelled amount</p>
+            </div>
+        </div>
     @endif
 
     <!-- Charts Section -->
