@@ -87,7 +87,7 @@
             <div class="bg-gradient-to-br from-red-50 to-red-100 border border-red-100 rounded-xl p-6 transition-all hover:shadow-md hover:border-red-200">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-red-600">Cancelled Bookings</p>
+                        <p class="text-sm font-medium text-red-600">Cancellation Fees</p>
                         <h3 class="text-2xl font-bold text-gray-800 mt-1">Tsh.{{ number_format($cancelledAmount, 2) }}</h3>
                     </div>
                     <div class="p-3 rounded-lg bg-red-100 text-red-600">
