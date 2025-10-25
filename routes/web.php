@@ -96,10 +96,11 @@ Route::get('/dpo/callback', [PDOController::class, 'handleCallback'])->name('dpo
 Route::get('/dpo/cancel', [PDOController::class, 'handleCallback'])->name('dpo.cancel');
 
 // New Tigosecure Callback Route (outside auth middleware if it's a public callback)
-Route::get('/tigosecure/callback', [VenderWalletController::class, 'handleTigosecureCallback'])->name('tigo.callback');
-Route::get('/tigosecure/redirect/{transactionRefId}', function ($transactionRefId) {
-    return redirect()->route('tigo.callback', ['transactionRefId' => $transactionRefId]);
-})->name('tigo.redirect');
+//Route::get('/tigosecure/callback', [VenderWalletController::class, 'handleTigosecureCallback'])->name('tigo.callback');
+
+//Route::get('/tigosecure/redirect/{transactionRefId}', function ($transactionRefId) {
+//    return redirect()->route('tigo.callback', ['transactionRefId' => $transactionRefId]);
+//})->name('tigo.redirect');
 
 // New PDO Callback Route for VenderWalletController (outside auth middleware if it's a public callback)
 Route::any('/vender/dpo/callback', [VenderWalletController::class, 'handlePdoCallback'])->name('vender.dpo.callback');
@@ -348,8 +349,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/print', [VenderController::class, 'print'])->name('vender.print');
 
         Route::post('/booking/payment/data', [VenderController::class, 'get_payment'])->name('vender.verify');
-        Route::match(['get', 'post'], '/tigo/redirect/{transactionRefId}', [VenderController::class, 'handleRedirects'])->name('vender.tigo.redirect');
-        Route::match(['get', 'post'], '/tigo/callback', [VenderController::class, 'handleCallbacks'])->name('vender.tigo.callback');
+
+        //Route::match(['get', 'post'], '/tigo/redirect/{transactionRefId}', [VenderController::class, 'handleRedirects'])->name('vender.tigo.redirect');
+        //Route::match(['get', 'post'], '/tigo/callback', [VenderController::class, 'handleCallbacks'])->name('vender.tigo.callback');
 
 
         Route::post('profile/update', [VenderController::class, 'update_profile'])->name('vender.profile.update');
